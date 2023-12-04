@@ -5,7 +5,9 @@ const verifyToken = require("../middlewares/verify-token");
 
 router.use(verifyToken)
 
-router.patch('/update/:id', car.updateCar)
+router.patch('/update/:id', car.updateCar);
+router.patch('/lockCar/:id', car.lockCar);
+
 
 router.use(verifyRole.verifyRoleAdmin)
 

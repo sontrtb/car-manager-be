@@ -26,21 +26,55 @@ const createCar = (idCar) => new Promise(async (resolve, reject) => {
     }
 })
 
-const updateCar = (id, carUpdate) => new Promise(async (resolve, reject) => {
+const updateCar = (idCar, carUpdate) => new Promise(async (resolve, reject) => {
     try {
-        const currentCar = await db.Car.findByPk(id);
+        const currentCar = await db.Car.findOne({ where: { idCar: idCar } });
 
-        console.log("carUpdate", carUpdate)
+        const carUpdateConver = carUpdate.userId ? {...carUpdate, startUseTime: new Date(), statusLock: false} : {...carUpdate, endUseTime: new Date(), userId: null, statusLock: true}
 
-        await currentCar.update({...currentCar, ...carUpdate})
+        await currentCar.update({...currentCar, ...carUpdateConver})
         await currentCar.save();
 
-        publishMQTT(currentCar);
+        const newCar = await db.Car.findByPk(currentCar.id, {include: [
+            {
+                model: db.User,
+                as: "userData",
+            },
+        ]} );
+
+        publishMQTT(newCar);
 
         resolve({
             errorCode: 0,
             mess: "Update thông tin xe...",
-            data: currentCar
+            data: newCar
+        })
+       
+    } catch (error) {
+        reject(error)
+    }
+})
+
+const lockCar = (idCar) => new Promise(async (resolve, reject) => {
+    try {
+        const currentCar = await db.Car.findOne({ where: { idCar: idCar } });
+
+        await currentCar.update({...currentCar, statusLock: !currentCar.statusLock})
+        await currentCar.save();
+
+        const newCar = await db.Car.findByPk(currentCar.id, {include: [
+            {
+                model: db.User,
+                as: "userData",
+            },
+        ]} );
+
+        publishMQTT(newCar);
+
+        resolve({
+            errorCode: 0,
+            mess: "Update thông tin xe...",
+            data: newCar
         })
        
     } catch (error) {
@@ -83,4 +117,4 @@ const getCar = (id) => new Promise(async (resolve, reject) => {
     }
 })
 
-module.exports = {createCar, updateCar, getListCar, getCar}
+module.exports = {createCar, updateCar, getListCar, getCar, lockCar}

@@ -40,6 +40,25 @@ const updateCar = async (req, res) => {
     }
 }
 
+const lockCar = async (req, res) => {
+    try {
+        const idCar = req.params.id;
+        if(!idCar || idCar?.length ===0) {
+            return res.status(400).json({
+                errorCode: 1,
+                mess: "Mã xe không được để trống"
+            })    
+        }
+        const response = await car.lockCar(idCar)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            errorCode: 1,
+            mess: "Server Error"
+        })
+    }
+}
+
 const getListCar = async (req, res) => {
     try {
         const response = await car.getListCar()
@@ -69,5 +88,6 @@ module.exports = {
     createCar,
     updateCar,
     getListCar,
-    getCar
+    getCar,
+    lockCar
 }

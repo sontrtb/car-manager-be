@@ -36,7 +36,7 @@ const updateUser = (id, userUpdate) => new Promise(async (resolve, reject) => {
 
         resolve({
             errorCode: 0,
-            mess: "Updat thông tin xe...",
+            mess: "Update thông tin người dùng...",
             data: currentUser
         })
        
@@ -45,4 +45,40 @@ const updateUser = (id, userUpdate) => new Promise(async (resolve, reject) => {
     }
 })
 
-module.exports = {getUser, getListUser, updateUser}
+const recharge = (id, money) => new Promise(async (resolve, reject) => {
+    try {
+        const currentUser = await db.User.findByPk(id);
+
+        await currentUser.update({...currentUser, amountOfMoney: Number(currentUser.amountOfMoney) + Number(money)})
+        await currentUser.save();
+
+        resolve({
+            errorCode: 0,
+            mess: "Nạp tiền thành công",
+            data: currentUser
+        })
+       
+    } catch (error) {
+        reject(error)
+    }
+})
+
+const pay = (id, money) => new Promise(async (resolve, reject) => {
+    try {
+        const currentUser = await db.User.findByPk(id);
+
+        await currentUser.update({...currentUser, amountOfMoney: Number(currentUser.amountOfMoney) - Number(money)})
+        await currentUser.save();
+
+        resolve({
+            errorCode: 0,
+            mess: "Thanh toan thành công",
+            data: currentUser
+        })
+       
+    } catch (error) {
+        reject(error)
+    }
+})
+
+module.exports = {getUser, getListUser, updateUser, recharge, pay}

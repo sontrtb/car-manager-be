@@ -41,9 +41,41 @@ const updateUser = async (req, res) => {
     }
 }
 
+const pay = async (req, res) => {
+    try {
+        const {id} = req.user
+        const {money} = req.body;
+        const response = await user.pay(id, money)
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log("error", error)
+        return res.status(500).json({
+            errorCode: 1,
+            mess: "Server Error"
+        })
+    }
+}
+
+const recharge = async (req, res) => {
+    try {
+        const {id} = req.params
+        const {money} = req.body;
+        const response = await user.recharge(id, money)
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log("error", error)
+        return res.status(500).json({
+            errorCode: 1,
+            mess: "Server Error"
+        })
+    }
+}
+
 
 module.exports = {
     getUser,
     getListUser,
-    updateUser
+    updateUser,
+    recharge,
+    pay
 }
