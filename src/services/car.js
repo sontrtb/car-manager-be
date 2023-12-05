@@ -42,7 +42,7 @@ const updateCar = (idCar, carUpdate) => new Promise(async (resolve, reject) => {
             },
         ]} );
 
-        publishMQTT(newCar);
+        publishMQTT({idCar: newCar.idCar, statusLock: newCar.statusLock ? "true": "false"});
 
         resolve({
             errorCode: 0,
@@ -69,7 +69,7 @@ const lockCar = (idCar) => new Promise(async (resolve, reject) => {
             },
         ]} );
 
-        publishMQTT(newCar);
+        publishMQTT({idCar: newCar.idCar, statusLock: newCar.statusLock ? "true": "false"});
 
         resolve({
             errorCode: 0,
